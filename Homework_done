@@ -1,0 +1,94 @@
+Dim tot As Double
+    Dim isa As Long
+    Dim cah As Double
+    Dim jac As Integer
+    Dim sar As Long
+    Dim rct As Long
+    Dim percan As Double
+    Dim dias As Integer
+    Dim dailyChange As Double
+    Dim averageChange As Double
+
+    ' Set title row
+    Range("I1").Value = "Ticker"
+    Range("J1").Value = "Yearly Change"
+    Range("K1").Value = "Percent Change"
+    Range("L1").Value = "Total Stock Volume"
+
+
+    ' Set initial values
+    jac = 0
+    tot = 0
+    cah = 0
+    sar = 2
+
+    ' get the row number of the last row with data
+    rct = Cells(Rows.Count, "A").End(xlUp).Row
+
+    For isa = 2 To rct
+
+        ' If ticker changes then print results
+        If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+
+            ' Stores results in variables
+            tot = tot + Cells(i, 7).Value
+
+            ' Handle zero total volume
+            If tot = 0 Then
+                ' print the results
+                Range("I" & 2 + j).Value = Cells(i, 1).Value
+                Range("J" & 2 + j).Value = 0
+                Range("K" & 2 + j).Value = "%" & 0
+                Range("L" & 2 + j).Value = 0
+
+            Else
+                ' Find First non zero starting value
+                If Cells(start, 3) = 0 Then
+                    For find_value = start To isa
+                        If Cells(find_value, 3).Value <> 0 Then
+                            sar = find_value
+                            Exit For
+                        End If
+                     Next find_value
+                End If
+
+                ' Calculate Change
+                cah = (Cells(i, 6) - Cells(sar, 3))
+                percan = Round((cah / Cells(sar, 3) * 100), 2)
+
+                ' start of the next stock ticker
+                sar = isa + 1
+
+                ' print the results
+                Range("I" & 2 + j).Value = Cells(i, 1).Value
+                Range("J" & 2 + j).Value = Round(cah, 2)
+                Range("K" & 2 + j).Value = "%" & percan
+                Range("L" & 2 + j).Value = tot
+
+                ' colors positives green and negatives red
+                Select Case change
+                    Case Is > 0
+                        Range("J" & 2 + j).Interior.ColorIndex = 4
+                    Case Is < 0
+                        Range("J" & 2 + j).Interior.ColorIndex = 3
+                    Case Else
+                        Range("J" & 2 + j).Interior.ColorIndex = 0
+                End Select
+
+            End If
+
+            ' reset variables for new stock ticker
+            tot = 0
+            cah = 0
+            jac = jac + 1
+            dias = 0
+
+        ' If ticker is still the same add results
+        Else
+            tot = tot + Cells(i, 7).Value
+
+        End If
+
+    Next i
+
+End Sub
