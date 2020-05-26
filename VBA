@@ -1,0 +1,91 @@
+
+Sub VBA()
+
+    Dim tot As Long
+    Dim isa As Long
+    Dim cah As Long
+    Dim jac As Long
+    Dim sar As Long
+    Dim rct As Long
+    Dim percan As Long
+    Dim dias As Long
+    Dim dailyChange As Long
+    Dim averageChange As Long
+    Dim J As Long
+    Dim Start As Long
+    Dim i As Double
+    
+    
+    
+    
+
+
+    ' row numbers #'s of the last row w/info
+    rct = Cells(Rows.Count, "A").End(xlUp).Row
+    
+    ' Initial values
+    jac = 0
+    tot = 0
+    cah = 0
+    sar = 2
+  
+
+    For i = 2 To rct
+
+        ' Where there is change then send results
+        If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+
+            ' Stores in info
+            tot = tot + Cells(i, 7).Value
+
+            ' You need to zero the total volume
+            If tot = 0 Then
+                ' print the results
+                Range("I" & 2 + J).Value = Cells(i, 1).Value
+                Range("J" & 2 + J).Value = 0
+                Range("K" & 2 + J).Value = "%" & 0
+                Range("L" & 2 + J).Value = 0
+
+            Else
+                ' non zero starting values if any
+                If Cells(sar, 3) = 0 Then
+                    For find_value = sar To isa
+                        If Cells(find_value, 3).Value <> 0 Then
+                            sar = find_value
+                            Exit For
+                        End If
+                     Next find_value
+                End If
+
+                ' Calculations
+                cah = (Cells(i, 6) - Cells(sar, 3))
+                percan = Round((cah / Cells(sar, 3) * 100), 2)
+
+                'stock ticker
+                sar = i + 1
+
+                ' Send the results to main page
+                Range("J" & 2 + J).Value = Round(cah, 2)
+                Range("K" & 2 + J).Value = "%" & percan
+                Range("L" & 2 + J).Value = tot
+
+                ' Color Cells
+                If Range("J" & 2 + J) > 0 Then Range("J" & 2 + J).Interior.ColorIndex = 4
+                If Range("J" & 2 + J) < 0 Then Range("J" & 2 + J).Interior.ColorIndex = 4
+
+            End If
+
+            ' reset
+            ac = jac + 1
+            tot = 0
+            cah = 0
+            dias = 0
+
+        ' Adding Results
+        Else
+            tot = tot + Cells(i, 7).Value
+
+        End If
+
+    Next
+End Sub
